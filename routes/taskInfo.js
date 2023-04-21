@@ -12,7 +12,8 @@ let taskData = {"tasks":[{
     "id":1,
     "title":"Check Emails",
     "description":"Need to check emails for important meetings",
-    "completed":false
+    "completed":false,
+    "priority":"low"
 }]};
 
 taskRoutes.get('/',(req,res)=>{
@@ -33,6 +34,13 @@ taskRoutes.get('/:id',(req,res)=>{
     }
 })
 
+taskRoutes.get('/priority/:level',(req,res)=>{
+    let priority = req.params.level;
+
+    let result = taskData.tasks.filter(task => task.priority == priority);
+    res.status(200).send(result);
+})
+
 taskRoutes.post('/',(req,res)=>{
     const taskInfo = req.body;
     if(validator.validateTaskInfo(taskInfo).status){
@@ -44,6 +52,28 @@ taskRoutes.post('/',(req,res)=>{
         res.status(400).json(validator.validateTaskInfo(taskInfo));
     }
 });
+
+taskRoutes.put('/:id',(req,res)=>{
+    let tasks = taskData.tasks;
+    let taskid = parseInt(req.params.id);
+    let taskInfo = req.body;
+
+    let result = tasks.findIndex(task => task.id === taskid);
+    
+    if(result === -1){
+        res.status(404).send("Resource Not Found");
+    }else{
+        if(validator.validateTaskInfo(taskInfo).status){
+            taskData.tasks[result].title=req.body.title;
+            taskData.tasks[result].description=req.body.description;
+            taskData.tasks[result].completed=req.body.completed;
+            taskData.tasks[result].priority=req.body.priority;
+            res.status(200).json(validator.validateTaskInfo(taskInfo));
+        } else{
+            res.status(400).json(validator.validateTaskInfo(taskInfo));
+        }
+    }
+})
 
 taskRoutes.delete('/:id',(req,res)=>{
     let taskId = req.params.id;

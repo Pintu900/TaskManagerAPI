@@ -3,7 +3,8 @@ class validator {
       if(taskInfo.hasOwnProperty("title") &&
         taskInfo.hasOwnProperty("description") &&
         taskInfo.hasOwnProperty("completed") && this.validateTitle(taskInfo)
-        && this.validateDescription(taskInfo) && this.validateCompletdStatus(taskInfo)) {
+        && this.validateDescription(taskInfo) && this.validateCompletdStatus(taskInfo)
+        && this.validatePriorityStatus(taskInfo)) {
           return {
             "status": true,
             "message": "Task has been added"
@@ -25,6 +26,13 @@ class validator {
             return {
               "status": false,
               "message": "Completed status must me boolean"
+            };
+          }
+
+          if(!this.validatePriorityStatus(taskInfo)){
+            return {
+              "status": false,
+              "message": "Priority must be 'low', 'medium', 'high'"
             };
           }
         return {
@@ -53,6 +61,12 @@ class validator {
       }
       return true;
     }
+    static validatePriorityStatus(task) {
+      if (task.priority == "low" || task.priority == "medium" || task.priority == "high") {
+        return true;
+    }
+    return false;
+  }
 }
   
   module.exports = validator;
